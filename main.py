@@ -13,7 +13,7 @@ from astrbot.api import logger
     "渲染Typst代码并返回图片", 
     "0.0.1",
     "https://github.com/Laplace825/astrbot_plugin_typst_render")
-class TypstRender(Star):
+class TypstRenderPlugin(Star):
     def __init__(self, context: Context, config=None):
         super().__init__(context)
 
