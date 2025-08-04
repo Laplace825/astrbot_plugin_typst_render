@@ -1,9 +1,16 @@
 {
-    "render": {
-        "description": "Typst渲染",
+    "math_font_size": {
+        "description": "默认字体大小",
         "type": "string",
-        "hint": "",
+        "hint": "pt, em, px等, 例如 14pt",
         "obvious_hint": true,
-        "default": ""
+        "default": "14pt"
+    },
+    "math_height":{
+        "description": "生成图片高度",
+        "type": "string",
+        "hint": "默认情况下 auto, 不填则默认 a4",
+        "obvious_hint": true,
+        "default": "auto"
     }
 } 
