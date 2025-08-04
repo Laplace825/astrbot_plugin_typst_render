@@ -1,8 +1,15 @@
-# helloworld
+# Typst Render
 
-AstrBot 插件模板
+AstrBot 插件, 支持使用将信息中的 Typst 代码渲染为 png 发送.
 
-A template plugin for AstrBot plugin feature
+## 使用
+
+```
+\typ 
+"""
+
+"""
+```
 
 # 支持
 
