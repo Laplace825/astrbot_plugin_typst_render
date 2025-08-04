@@ -12,7 +12,7 @@ from astrbot.api import logger
     "astrbot_plugin_typst_render", 
     "Laplace", 
     "渲染Typst代码并返回图片", 
-    "0.1.0",
+    "0.1.1",
     "https://github.com/Laplace825/astrbot_plugin_typst_render")
 class TypstRenderPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
@@ -102,6 +102,6 @@ class TypstRenderPlugin(Star):
         return """
 #import "@preview/ourchat:0.2.0" as oc
 #import oc.themes: *
-
+#set page(margin: auto, height: auto, width: auto)
 #let yau = wechat.default-user(name: [丘成桐（囯內）])
         """

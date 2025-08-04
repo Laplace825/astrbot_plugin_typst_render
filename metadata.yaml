@@ -1,5 +1,5 @@
 name: TypstRender
 desc: 渲染Typst代码并返回图片
-version: v0.1.0 
+version: v0.1.1 
 author: Laplace # 作者
 repo: https://github.com/Laplace825/astrbot_plugin_typst_render # 插件的仓库地址
