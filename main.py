@@ -12,13 +12,10 @@ class TypstRender(Star):
     def __init__(self, context: Context):
         super().__init__(context)
 
-    async def initialize(self):
-        """"""
-        self.temp_png_file_dir = tempfile.TemporaryDirectory()
-
     # 注册指令的装饰器。指令名为 typ。注册成功后，发送 `/typ` 就会触发这个指令
     @filter.command("typ")
     async def typ(self, event: AstrMessageEvent):
+        self.temp_png_file_dir = tempfile.TemporaryDirectory()
         message_str = event.message_str  # 用户发的纯文本消息字符串
         if not message_str:
             yield event.plain_result("请提供Typst代码进行渲染")
