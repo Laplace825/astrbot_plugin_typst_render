@@ -7,7 +7,7 @@ from astrbot.api.star import Context, Star, register
 from astrbot.api import logger
 
 
-@register("TypstRender", "Laplace", "渲染Typst代码并返回图片", "0.0.1")
+@register("astrbot_plugin_typst_render", "Laplace", "渲染Typst代码并返回图片", "0.0.1", " https://github.com/Laplace825/astrbot_plugin_typst_render")
 class TypstRender(Star):
     def __init__(self, context: Context):
         super().__init__(context)
