@@ -1,0 +1,9 @@
+{
+    "render": {
+        "description": "Typst渲染",
+        "type": "string",
+        "hint": "",
+        "obvious_hint": true,
+        "default": ""
+    }
+} 
