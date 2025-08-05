@@ -14,7 +14,7 @@ from astrbot.api import logger
     "astrbot_plugin_typst_render", 
     "Laplace", 
     "渲染Typst代码并返回图片", 
-    "0.2.0",
+    "0.2.1",
     "https://github.com/Laplace825/astrbot_plugin_typst_render")
 class TypstRenderPlugin(Star):
     def __init__(self, context: Context, config: AstrBotConfig):
@@ -23,7 +23,7 @@ class TypstRenderPlugin(Star):
         self.math_height = config.get("math_height", "auto")
 
     @staticmethod
-    async def __typ_render_core(source: str) -> str:
+    async def _typ_render_core(source: str) -> str:
         """
         渲染Typst代码并返回图片的base64编码
         :param source: Typst代码字符串
@@ -58,38 +58,61 @@ class TypstRenderPlugin(Star):
     # 注册指令的装饰器。指令名为 tym。注册成功后，发送 `/tym` 就会触发这个指令, 专门渲染数学公式
     @filter.command("tym")
     async def on_command_tym(self, event: AstrMessageEvent):
-        message_str = event.message_str  # 用户发的纯文本消息字符串
-        message_str = message_str[len("tym"):]
-        if not message_str:
-            yield event.plain_result("请提供Typst公式进行渲染")
-            return
-        message_str = f"{self.__gen_math_style(self.math_font_size, self.math_height)}\n{message_str}"
-        base64_image_data = await self.__typ_render_core(message_str)
-        yield event.make_result().base64_image(base64_image_data)
+        template_func = lambda: self._gen_math_style(self.math_font_size, self.math_height)
+        async for result in self._render_with_template(
+            event, "tym", template_func, "请提供Typst公式进行渲染"
+        ):
+            yield result
 
     @filter.command("typ")
     async def on_command_typ(self, event: AstrMessageEvent):
-        message_str = event.message_str
-        message_str = message_str[len("typ"):]
-        if not message_str:
-            yield event.plain_result("请提供Typst代码进行渲染")
-            return
-        base64_image_data = await self.__typ_render_core(message_str)
-        yield event.make_result().base64_image(base64_image_data)
+        async for result in self._render_with_template(
+            event, "typ", None, "请提供Typst代码进行渲染"
+        ):
+            yield result
 
     @filter.command("yau")
     async def on_command_yau(self, event: AstrMessageEvent):
-        message_str = event.message_str
-        message_str = message_str[len("yau"):]
-        if not message_str:
-            yield event.plain_result("请提供Typst OurChat代码进行渲染")
+        async for result in self._render_with_template(
+            event, "yau", self._gen_ourchat, "请提供Typst OurChat代码进行渲染"
+        ):
+            yield result
+
+
+    async def _render_with_template(self, event: AstrMessageEvent, cmd: str, template_func=None, error_msg: str = "请提供内容进行渲染"):
+        """
+        通用渲染方法，减少重复代码
+        :param event: 消息事件
+        :param cmd: 命令名称
+        :param template_func: 模板函数，用于包装用户内容
+        :param error_msg: 内容为空时的错误消息
+        """
+        message_str, is_empty = self._parse_command(event, cmd)
+        if is_empty:
+            yield event.plain_result(error_msg)
             return
-        message_str = f"{self.__gen_ourchat()}\n{message_str}"
-        base64_image_data = await self.__typ_render_core(message_str)
+        
+        # 如果有模板函数，使用模板包装内容
+        if template_func:
+            message_str = f"{template_func()}\n{message_str}"
+        
+        base64_image_data = await self._typ_render_core(message_str)
         yield event.make_result().base64_image(base64_image_data)
 
     @staticmethod
-    def __gen_math_style(math_font_size, math_height) -> str:
+    def _parse_command(event: AstrMessageEvent, cmd: str) -> tuple[str, bool]:
+        """
+        解析命令，提取命令后的内容
+        :param event: 消息事件
+        :param cmd: 命令名称
+        :return: (提取的内容, 是否为空)
+        """
+        message_str = event.message_str[len(cmd):]
+        is_empty = not message_str.strip()
+        return message_str, is_empty
+
+    @staticmethod
+    def _gen_math_style(math_font_size, math_height) -> str:
         """
         生成数学公式的Typst样式, 便于阅读
         :return: Typst样式字符串
@@ -104,7 +127,7 @@ class TypstRenderPlugin(Star):
         """
 
     @staticmethod
-    def __gen_ourchat() -> str:
+    def _gen_ourchat() -> str:
         """
         生成OurChat样式的Typst样式
         :return: OurChat样式字符串
